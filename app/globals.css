@@ -1,42 +1,996 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #111827;
+
+  --card: #ffffff;
+  --card-foreground: #111827;
+
+  --primary: #8e42ff;
+  --primary-hover: #7935e6;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f3f4f6;
+  --secondary-foreground: #374151;
+
+  --accent: #f9fafb;
+  --accent-foreground: #111827;
+
+  --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #8e42ff;
+
+  --radius: 0.5rem;
+
+  --sidebar-width: 280px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+.dark {
+  --background: #111827;
+  --foreground: #f9fafb;
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+  --card: #1f2937;
+  --card-foreground: #f9fafb;
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --primary: #8e42ff;
+  --primary-hover: #7935e6;
+  --primary-foreground: #ffffff;
+
+  --secondary: #374151;
+  --secondary-foreground: #f9fafb;
+
+  --accent: #1f2937;
+  --accent-foreground: #f9fafb;
+
+  --destructive: #ef4444;
+  --destructive-hover: #dc2626;
+  --destructive-foreground: #ffffff;
+
+  --muted: #374151;
+  --muted-foreground: #9ca3af;
+
+  --border: #374151;
+  --input: #374151;
+  --ring: #8e42ff;
 }
 
 * {
   box-sizing: border-box;
+  margin: 0;
   padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%; /* Ngăn chặn tự động thay đổi font size trên iOS */
+  touch-action: manipulation; /* Cải thiện hiệu suất touch trên các thiết bị cũ */
+}
+
+body {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--background);
+  color: var(--foreground);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased; /* Làm mịn font trên WebKit */
+  -moz-osx-font-smoothing: grayscale; /* Làm mịn font trên Firefox */
+  overflow-x: hidden; /* Ngăn chặn scroll ngang */
+}
+
+/* Mobile menu toggle */
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 100;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background-color: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 40;
+  animation: fadeIn 0.2s ease-out;
+}
+
+/* App layout */
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--card);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  height: 100vh;
+  z-index: 50;
+  transition: transform 0.3s ease;
+}
+
+.sidebar-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.theme-toggle {
+  position: relative;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: var(--accent);
+}
+
+.search-container {
+  padding: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.search-box {
+  position: relative;
+  width: 100%;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1rem;
+  height: 1rem;
+  color: var(--muted-foreground);
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.625rem 0.75rem 0.625rem 2.25rem;
+  background-color: var(--accent);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: var(--foreground);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none; /* Loại bỏ style mặc định trên iOS */
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(142, 66, 255, 0.1);
+}
+
+.search-input::placeholder {
+  color: var(--muted-foreground);
+}
+
+.sidebar-nav {
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; /* Cải thiện scroll trên iOS cũ */
+  flex: 1;
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent; /* Loại bỏ highlight khi tap trên mobile */
+}
+
+.sidebar-link:hover {
+  background-color: var(--accent);
+  color: var(--foreground);
+}
+
+.sidebar-link.active {
+  background-color: var(--accent);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.sidebar-icon {
+  width: 1rem;
+  height: 1rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Main content */
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  padding: 1.5rem;
+}
+
+/* Container */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: var(--card);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--foreground);
   margin: 0;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.subtitle {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+.content {
+  padding: 1.5rem;
+}
+
+/* Form */
+.form {
+  padding: 1.5rem;
+}
+
+.url-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.url-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.url-input-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.url-input-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--accent);
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+}
+
+.url-input {
+  flex: 1;
+  padding: 0.625rem 0.75rem;
+  background-color: var(--background);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  color: var(--foreground);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none; /* Loại bỏ style mặc định trên iOS */
+}
+
+.url-input:focus {
+  outline: none;
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(142, 66, 255, 0.1);
+}
+
+.url-input.error {
+  border-color: var(--destructive);
+}
+
+.url-input.error:focus {
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.1);
+}
+
+.url-input.success {
+  border-color: #10b981;
+}
+
+.url-input.success:focus {
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+.remove-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: var(--background);
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  color: var(--destructive);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent; /* Loại bỏ highlight khi tap trên mobile */
+}
+
+.remove-button:hover {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+  border-color: var(--destructive);
+}
+
+.error-message {
+  font-size: 0.75rem;
+  color: var(--destructive);
+  margin-top: 0.25rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* Buttons */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent; /* Loại bỏ highlight khi tap trên mobile */
+  touch-action: manipulation; /* Cải thiện hiệu suất touch */
+}
+
+.button:hover {
+  background-color: var(--primary-hover);
+}
+
+.button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-primary {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.button-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.button-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.button-secondary:hover {
+  background-color: var(--muted);
+}
+
+.button-destructive {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+.button-destructive:hover {
+  background-color: var(--destructive-hover);
+}
+
+/* Table */
+.table {
+  width: 100%;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.table-header {
+  background-color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.table-row {
+  display: grid;
+  grid-template-columns: 48px 3fr 1fr 100px;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+.table-header .table-row {
+  padding: 0.75rem 1rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-body .table-row {
+  padding: 1rem;
+  background-color: var(--card);
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table-body .table-row:hover {
+  background-color: var(--accent);
+}
+
+.table-body .table-row:last-child {
+  border-bottom: none;
+}
+
+.table-cell {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.checkbox-input {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 0.25rem;
+  border: 1px solid var(--input);
+  background-color: var(--background);
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.checkbox-input:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='white'%3E%3Cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3E%3C/svg%3E");
+}
+
+.checkbox-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
+}
+
+.url-cell {
+  min-width: 0;
+}
+
+.url-text {
+  font-size: 0.875rem;
+  color: var(--foreground);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.date-cell {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.actions-cell {
+  justify-content: flex-end;
+}
+
+.actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.action-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius);
+  background-color: transparent;
+  border: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 0.2s;
+  -webkit-tap-highlight-color: transparent; /* Loại bỏ highlight khi tap trên mobile */
+}
+
+.action-button:hover {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.action-open:hover {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.action-delete:hover {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+/* Selection bar */
+.selection-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.selection-info {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.selection-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Empty state */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.empty-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 0.5rem;
+}
+
+.empty-description {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  max-width: 24rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Loading state */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.loading-spinner {
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--muted);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.mr-1 {
+  margin-right: 1rem;
+}
+
+/* Error state */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.error-message {
+  font-size: 0.875rem;
+  color: var(--destructive);
+  margin-bottom: 1.5rem;
+}
+
+/* Animations */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 1rem;
+  }
+
+  .container {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .sidebar-overlay {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: 0;
+    padding-top: 4rem;
+  }
+
+  .table-row {
+    grid-template-columns: 48px 2fr 1fr 80px;
+  }
+
+  .header {
+    padding: 1.25rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+
+  .form {
+    padding: 1.25rem;
+  }
+}
+
+/* Styles cho iPhone 6 và các thiết bị nhỏ hơn */
+@media (max-width: 375px) {
+  .mobile-menu-toggle {
+    top: 0.75rem;
+    right: 0.75rem;
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .sidebar-header {
+    padding: 1rem;
+  }
+
+  .sidebar-title {
+    font-size: 1.125rem;
+  }
+
+  .search-container {
+    padding: 0.75rem;
+  }
+
+  .search-input {
+    padding: 0.5rem 0.75rem 0.5rem 2rem;
+    font-size: 0.8125rem;
+  }
+
+  .sidebar-nav {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .sidebar-link {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .main-content {
+    padding: 0.75rem;
+    padding-top: 3.5rem;
+  }
+
+  .container {
+    border-radius: 0.375rem;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: 1.125rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+  }
+
+  .content {
+    padding: 1rem;
+  }
+
+  .form {
+    padding: 1rem;
+  }
+
+  .url-input-icon {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .url-input {
+    padding: 0.5rem 0.625rem;
+    font-size: 0.8125rem;
+  }
+
+  .remove-button {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .button {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8125rem;
+  }
+
+  .table-row {
+    padding: 0.75rem;
+  }
+
+  .empty {
+    padding: 3rem 1rem;
+  }
+
+  .empty-title {
+    font-size: 1.125rem;
+  }
+
+  .empty-description {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .table-row {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .table-header {
+    display: none;
+  }
+
+  .checkbox {
+    display: none;
+  }
+
+  .actions-cell {
+    justify-content: flex-end;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .header .flex {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .header .flex .flex {
+    width: 100%;
+  }
+
+  .header .button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* Tối ưu cho thiết bị cũ */
+@media (max-width: 480px) {
+  /* Giảm shadow và hiệu ứng để tăng hiệu suất */
+  .container {
+    box-shadow: none;
+  }
+
+  .button:focus {
+    box-shadow: none;
+  }
+
+  .url-input:focus {
+    box-shadow: none;
+  }
+
+  /* Giảm padding để tối ưu không gian */
+  .main-content {
+    padding: 0.5rem;
+    padding-top: 3.5rem;
+  }
+
+  .header {
+    padding: 0.75rem;
+  }
+
+  .content {
+    padding: 0.75rem;
+  }
+
+  /* Tối ưu font size */
+  body {
+    font-size: 14px;
+  }
+
+  .title {
+    font-size: 1rem;
+  }
+
+  .subtitle {
+    font-size: 0.75rem;
+  }
+
+  /* Tối ưu animation */
+  .animate-fade-in {
+    animation-duration: 0.2s;
+  }
+
+  /* Tắt một số hiệu ứng hover trên thiết bị cũ */
+  .sidebar-link:hover,
+  .button:hover,
+  .action-button:hover {
+    transition: none;
+  }
+}
+
+/* Tối ưu cho iPhone 6 và các thiết bị cũ */
+@supports (-webkit-overflow-scrolling: touch) {
+  /* Các thiết bị iOS cũ */
+  input,
+  textarea,
+  button {
+    font-size: 16px; /* Ngăn iOS zoom khi focus vào input */
+  }
+
+  .checkbox-input:checked {
+    background-color: var(--primary);
+    background-image: none; /* Một số thiết bị iOS cũ không hỗ trợ SVG trong CSS */
+    position: relative;
+  }
+
+  .checkbox-input:checked::after {
+    content: "✓";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 0.75rem;
+  }
+
+  /* Tối ưu hiệu suất trên iOS cũ */
+  .animate-fade-in {
+    animation: none;
+    opacity: 1;
+  }
+
+  /* Cải thiện tap targets cho iOS cũ */
+  .sidebar-link,
+  .button,
+  .action-button {
+    min-height: 44px; /* Apple khuyến nghị kích thước tối thiểu */
   }
 }
