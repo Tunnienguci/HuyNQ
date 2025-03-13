@@ -490,9 +490,6 @@ body {
   padding: 1rem;
   background-color: var(--card);
   transition: background-color 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .table-body .table-row:hover {
@@ -745,9 +742,15 @@ body {
     padding-top: 4rem;
   }
 
-  .table-row {
-    grid-template-columns: 48px 2fr 1fr 80px;
+  .table-body .table-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
+
+  /* .table-row {
+    grid-template-columns: 48px 2fr 1fr 80px;
+  } */
 
   .header {
     padding: 1.25rem;
